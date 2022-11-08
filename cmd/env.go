@@ -32,6 +32,12 @@ func init() {
 }
 
 func runCmd() {
+	fmt.Println("TinyHelper!")
+	// if we are working on the tool we don't want to keep overwriting .envrc
+	devMode := false
+	if strings.Contains(os.Args[0], "main") {
+		devMode = true
+	}
 	err := checkTinyGo()
 	if err != nil {
 		log.Fatal("Tinygo not found on $PATH. Please see https://tinygo.org/getting-started/install/ for install instructions.")
@@ -50,7 +56,7 @@ func runCmd() {
 
 	i := parseInfo(env, target)
 
-	fillTempate(i)
+	fillTempate(i, devMode)
 }
 
 func getTarget() string {
@@ -72,7 +78,7 @@ func getTarget() string {
 		}
 
 		if result == "No" {
-			log.Fatal("Target required can not proceed!")
+			log.Fatal("Target required can not proceed, exiting!")
 		}
 	}
 
@@ -143,11 +149,18 @@ func parseInfo(info, target string) data {
 	return d
 }
 
-func fillTempate(info data) {
-	tmpl, _ := template.New("template").Parse("export GOROOT={{.Goroot}}\n\nexport GOFLAGS={{.Flags}}\n\nexport TH_TARGET={{.Target}}")
-
+func fillTempate(info data, devMode bool) {
+	tmpl, err := template.New("template").Parse("export GOROOT={{.Goroot}}\n\nexport GOFLAGS={{.Flags}}\n\nexport TH_TARGET={{.Target}}")
+	if err != nil {
+		log.Fatal(err)
+	}
+	var f *os.File
 	// create the file
-	f, err := os.Create(".envrc.temp")
+	if devMode == true {
+		f, err = os.Create(".envrc.temp")
+	} else {
+		f, err = os.Create(".envrc")
+	}
 	if err != nil {
 		log.Fatal(err)
 	}
