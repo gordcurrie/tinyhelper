@@ -17,6 +17,11 @@ import (
 	"github.com/spf13/viper"
 )
 
+const (
+	yes = "Yes"
+	no  = "No"
+)
+
 // envCmd represents the env command
 var envCmd = &cobra.Command{
 	Use:   "env",
@@ -48,6 +53,7 @@ func runCmd() {
 		log.Fatal("direnv not found on $PATH. Please see https://direnv.net/docs/installation.html for install instructions.")
 	}
 
+	getPossibleTargets()
 	target := getTarget()
 	env, err := getInfo(target)
 	if err != nil {
@@ -60,29 +66,52 @@ func runCmd() {
 }
 
 func getTarget() string {
+	// "target" is a global flag
 	target := viper.GetString("target")
-	if target == "" {
-		target = os.Getenv("TH_TARGET")
-		if target == "" {
-			log.Fatal("Target required can not proceed!")
-		}
 
-		prompt := promptui.Select{
+	if target != "" {
+		return target
+	}
+
+	target = os.Getenv("TH_TARGET")
+
+	if target != "" {
+		existing := promptui.Select{
 			Label: fmt.Sprintf("No target passed. Use existing target (%s)?", target),
-			Items: []string{"Yes", "No"},
+			Items: []string{yes, no},
 		}
-
-		_, result, err := prompt.Run()
+		_, result, err := existing.Run()
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		if result == "No" {
-			log.Fatal("Target required can not proceed, exiting!")
+		if result == yes {
+			return target
 		}
 	}
 
+	choose := promptui.Select{
+		Label: "Select target",
+		Items: getPossibleTargets(),
+	}
+
+	_, target, err := choose.Run()
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	return target
+}
+
+func getPossibleTargets() []string {
+	out, err := exec.Command("tinygo", "targets", target).Output()
+	if err != nil {
+		return nil
+	}
+
+	targets := strings.Split(string(out), "\n")
+
+	return targets
 }
 
 func getInfo(target string) (string, error) {
@@ -154,8 +183,8 @@ func fillTempate(info data, devMode bool) {
 	if err != nil {
 		log.Fatal(err)
 	}
+
 	var f *os.File
-	// create the file
 	if devMode == true {
 		f, err = os.Create(".envrc.temp")
 	} else {
@@ -164,7 +193,6 @@ func fillTempate(info data, devMode bool) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	// close the file with defer
 	defer f.Close()
 
 	tmpl.Execute(f, info)
