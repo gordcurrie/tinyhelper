@@ -7,9 +7,11 @@ package cmd
 import (
 	"fmt"
 	"html/template"
+	"io/ioutil"
 	"log"
 	"os"
 	"os/exec"
+	"regexp"
 	"strings"
 
 	"github.com/manifoldco/promptui"
@@ -152,8 +154,9 @@ type data struct {
 }
 
 const (
-	gorootKey = "cached GOROOT"
-	tagsKey   = "build tags"
+	gorootKey    = "cached GOROOT"
+	tagsKey      = "build tags"
+	commentStart = "# TinyHelper START"
 )
 
 func parseInfo(info, target string) data {
@@ -179,21 +182,50 @@ func parseInfo(info, target string) data {
 }
 
 func fillTempate(info data, devMode bool) {
-	tmpl, err := template.New("template").Parse("export GOROOT={{.Goroot}}\n\nexport GOFLAGS={{.Flags}}\n\nexport TH_TARGET={{.Target}}")
+	tmpl, err := template.New("template").Parse(commentStart + "\nexport GOROOT={{.Goroot}}\nexport GOFLAGS={{.Flags}}\nexport TH_TARGET={{.Target}}\n# TinyHelper END\n")
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	var f *os.File
+	file := ".envrc"
 	if devMode == true {
-		f, err = os.Create(".envrc.temp")
-	} else {
-		f, err = os.Create(".envrc")
+		file = ".envrc.dev"
 	}
+
+	old, err := getExistingConfig(file)
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	f, err = os.Create(file)
 	defer f.Close()
 
+	f.Write(old)
+
+	fmt.Printf("Writing environment config to %s...\n", file)
 	tmpl.Execute(f, info)
+}
+
+func getExistingConfig(file string) ([]byte, error) {
+	b, err := ioutil.ReadFile(file)
+	if err != nil {
+		return nil, err
+	}
+
+	// regex to match everything before commentStart
+	r, err := regexp.Compile(fmt.Sprintf("((.|\n)*)%s", commentStart))
+	if err != nil {
+		return nil, err
+	}
+
+	old := r.Find(b)
+
+	if len(old) > len(commentStart) { // if something matched drop commentStart from it
+		old = old[:len(old)-len(commentStart)]
+	} else { // no nothing matches than everything is a preexisting config
+		old = b
+	}
+
+	return old, nil
 }
