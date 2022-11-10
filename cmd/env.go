@@ -27,8 +27,8 @@ const (
 // envCmd represents the env command
 var envCmd = &cobra.Command{
 	Use:   "env",
-	Short: "configures .envrc",
-	Long:  `Creates an .envrc file using data from the results of tinygo info for the passed target`,
+	Short: "Configures .envrc",
+	Long:  `Creates an .envrc file using data from the results of "tinygo info" for the passed target`,
 	Run: func(cmd *cobra.Command, args []string) {
 		runCmd()
 	},

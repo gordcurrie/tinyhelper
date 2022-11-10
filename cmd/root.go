@@ -12,8 +12,8 @@ var target string
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "tinyhelper",
-	Short: "tool for helping configure tinygo",
-	Long:  `tool for helping configure tinygo`,
+	Short: "Tool for helping configure tinygo",
+	Long:  `Tool for helping configure tinygo`,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	// Run: func(cmd *cobra.Command, args []string) { },
