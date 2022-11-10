@@ -60,7 +60,7 @@ export TH_TARGET=pico
 
 ```
 
-![TinyHelper](https://media.giphy.com/media/fpGwl8dHUVJOZBo1HC/giphy.gif)
+![TinyHelper](https://github.com/gordcurrie/gifs/blob/main/tinyhelper.gif)
 
 # Development
 
