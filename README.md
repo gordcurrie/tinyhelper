@@ -1,6 +1,12 @@
 # TinyHelper
 
-# CLI Util for TinyGo
+A CLI Util for TinyGo
+
+# Instillation
+
+```
+go install github.com/gordcurrie/tinyhelper@latest
+```
 
 # Usage
 
@@ -24,7 +30,14 @@ Use "tinyhelper [command] --help" for more information about a command.
 
 ## env command
 
+```
+tinyhelper env [-t {target}]
+```
+
 Creates a `.envrc` file with `GOROOT` and `GOFLAGS` configured for your environment and target device.
+
+If target flag is passed with use to set target. If not passed and existing `TH_TARGET` env var is set
+will use it as target. Else will prompt for target selection.
 
 # Development
 

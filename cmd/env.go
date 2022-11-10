@@ -5,8 +5,10 @@ Copyright © 2022 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
+	"errors"
 	"fmt"
 	"html/template"
+	"io/fs"
 	"io/ioutil"
 	"log"
 	"os"
@@ -210,6 +212,9 @@ func fillTempate(info data, devMode bool) {
 func getExistingConfig(file string) ([]byte, error) {
 	b, err := ioutil.ReadFile(file)
 	if err != nil {
+		if errors.Is(err, fs.ErrNotExist) {
+			return nil, nil
+		}
 		return nil, err
 	}
 

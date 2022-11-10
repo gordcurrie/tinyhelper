@@ -36,6 +36,16 @@ var _ = Describe("env", func() {
 			})
 		})
 
+		Context("with a file that doesn't exist", func() {
+			It("should return an empty []byte", func() {
+				result, err := getExistingConfig("./test_data/.nonexisting_envrc")
+
+				Expect(err).NotTo(HaveOccurred())
+
+				Expect(result).To(BeEmpty())
+			})
+		})
+
 		Context("with file with existing config", func() {
 			It("should return the existing config contents", func() {
 				result, err := getExistingConfig("./test_data/.existing_config_envrc")
