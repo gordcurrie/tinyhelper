@@ -2,6 +2,16 @@
 
 A CLI Util for TinyGo
 
+# Prerequisites
+
+## TinyGo
+
+Requires TinyGo to be installed, see https://tinygo.org/getting-started/install/ for the installation guide.
+
+## Direnv
+
+Requires direnv to be installed, see https://direnv.net/docs/installation.html for the installation guide.
+
 # Instillation
 
 ```
@@ -39,13 +49,24 @@ Creates a `.envrc` file with `GOROOT` and `GOFLAGS` configured for your environm
 If target flag is passed with use to set target. If not passed and existing `TH_TARGET` env var is set
 will use it as target. Else will prompt for target selection.
 
+### Example generated .envrc
+
+```
+# TinyHelper START
+export GOROOT=/home/gord/.cache/tinygo/goroot-d3a5eae46885c758dc170cc3b2ebb723ef9c0181c18efbe4c5dc3ba26d61a5ae
+export GOFLAGS=-tags=cortexm,baremetal,linux,arm,rp2040,rp,pico,tinygo,math_big_pure_go,gc.conservative,scheduler.tasks,serial.usb
+export TH_TARGET=pico
+# TinyHelper END
+
+```
+
 # Development
 
 # dev mode
 
 If running via cli via `go run main.go env` TinyHelper will detect it is in dev mode and will output to `.envrc.temp` to prevent overwriting of Go environment.
 
-# `.envrc`
+# Configure `.envrc`
 
 From the root the project run, add `export TH_TARGET=pico` to your existing `.envrc` file or create a
 new file with the following command from the root of the project.
