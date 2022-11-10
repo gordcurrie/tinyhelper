@@ -226,7 +226,7 @@ func getExistingConfig(file string) ([]byte, error) {
 
 	old := r.Find(b)
 
-	if len(old) > len(commentStart) { // if something matched drop commentStart from it
+	if len(old) >= len(commentStart) { // if something matched drop commentStart from it
 		old = old[:len(old)-len(commentStart)]
 	} else { // no nothing matches than everything is a preexisting config
 		old = b

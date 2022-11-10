@@ -65,6 +65,16 @@ var _ = Describe("env", func() {
 				Expect(string(result)).To(Equal("first line\n# comment\nsecond line\n"))
 			})
 		})
+
+		Context("with file with just a TinyHelper comment", func() {
+			It("should return the existing config contents but remove the th comment text", func() {
+				result, err := getExistingConfig("./test_data/.just_th_comment.envrc")
+
+				Expect(err).NotTo(HaveOccurred())
+
+				Expect(string(result)).To(Equal(""))
+			})
+		})
 	})
 })
 
