@@ -57,7 +57,6 @@ func runCmd() {
 		log.Fatal("direnv not found on $PATH. Please see https://direnv.net/docs/installation.html for install instructions.")
 	}
 
-	getPossibleTargets()
 	target := getTarget()
 	env, err := getInfo(target)
 	if err != nil {
