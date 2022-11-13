@@ -60,6 +60,14 @@ export TH_TARGET=pico
 
 ```
 
+## flash command
+
+```
+tinyhlelper  flash [-t {target}][args]
+```
+
+Runs the TinyGo flash command, will accept and any valid arguments for TinyGo flash. Will use preconfigured target if set or prompt for target if not set.
+
 ![TinyHelper](https://github.com/gordcurrie/gifs/blob/main/tinyhelper.gif)
 
 # Development

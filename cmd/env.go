@@ -42,7 +42,21 @@ func init() {
 
 func runCmd() {
 	fmt.Println("TinyHelper!")
-	// if we are working on the tool we don't want to keep overwriting .envrc
+
+	helpz := viper.GetBool("helpz")
+
+	if helpz {
+		out, err := exec.Command("tinygo", "help").CombinedOutput()
+		if err != nil {
+			log.Fatal(err.Error())
+		}
+
+		fmt.Println("tinyhelper env --helpz called")
+		fmt.Println(string(out))
+
+		return
+	}
+
 	devMode := false
 	if strings.Contains(os.Args[0], "main") {
 		devMode = true
