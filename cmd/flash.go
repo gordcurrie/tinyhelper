@@ -6,7 +6,7 @@ package cmd
 
 import (
 	"fmt"
-	"log"
+	"os"
 	"os/exec"
 
 	"github.com/spf13/cobra"
@@ -46,10 +46,9 @@ func runFlashCmd(args []string) {
 	if helpz {
 		out, err := exec.Command("tinygo", "flash", "--help").CombinedOutput()
 		if err != nil {
-			log.Fatal(err.Error())
+			exitWithError(out)
 		}
 
-		fmt.Println("tinyhelper flash --helpz called")
 		fmt.Println(string(out))
 
 		return
@@ -61,7 +60,14 @@ func runFlashCmd(args []string) {
 
 	out, err := exec.Command("tinygo", args...).CombinedOutput()
 	if err != nil {
-		log.Fatal(err.Error())
+		exitWithError(out)
 	}
+
 	fmt.Println(string(out))
+}
+
+func exitWithError(out []byte) {
+	fmt.Println("Error:" + string(out))
+	fmt.Println("Exiting...")
+	os.Exit(1)
 }

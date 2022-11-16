@@ -48,7 +48,7 @@ func runCmd() {
 	if helpz {
 		out, err := exec.Command("tinygo", "help").CombinedOutput()
 		if err != nil {
-			log.Fatal(err.Error())
+			exitWithError(out)
 		}
 
 		fmt.Println("tinyhelper env --helpz called")
