@@ -16,7 +16,6 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/manifoldco/promptui"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -80,55 +79,6 @@ func runCmd() {
 	i := parseInfo(env, target)
 
 	fillTempate(i, devMode)
-}
-
-func getTarget() string {
-	// "target" is a global flag
-	target := viper.GetString("target")
-
-	if target != "" {
-		return target
-	}
-
-	target = os.Getenv("TH_TARGET")
-
-	if target != "" {
-		existing := promptui.Select{
-			Label: fmt.Sprintf("No target passed. Use existing target (%s)?", target),
-			Items: []string{yes, no},
-		}
-		_, result, err := existing.Run()
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		if result == yes {
-			return target
-		}
-	}
-
-	choose := promptui.Select{
-		Label: "Select target",
-		Items: getPossibleTargets(),
-	}
-
-	_, target, err := choose.Run()
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	return target
-}
-
-func getPossibleTargets() []string {
-	out, err := exec.Command("tinygo", "targets", target).Output()
-	if err != nil {
-		return nil
-	}
-
-	targets := strings.Split(string(out), "\n")
-
-	return targets
 }
 
 func getInfo(target string) (string, error) {

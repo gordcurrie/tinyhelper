@@ -29,11 +29,14 @@ Usage:
 Available Commands:
   completion  Generate the autocompletion script for the specified shell
   env         Configures .envrc
+  flash       Flash target device
   help        Help about any command
 
 Flags:
   -h, --help            help for tinyhelper
+  -z, --helpz           tinygo help
   -t, --target string   target hardware
+  -u, --update          update target
 
 Use "tinyhelper [command] --help" for more information about a command.
 ```
@@ -41,13 +44,15 @@ Use "tinyhelper [command] --help" for more information about a command.
 ## env command
 
 ```
-tinyhelper env [-t {target}]
+tinyhelper env [-t {target}] [-u]
 ```
 
 Creates a `.envrc` file with `GOROOT` and `GOFLAGS` configured for your environment and target device.
 
 If target flag is passed with use to set target. If not passed and existing `TH_TARGET` env var is set
 will use it as target. Else will prompt for target selection.
+
+Update flag will prompt for selecting new target even if target is already set.
 
 ### Example generated .envrc
 
@@ -65,10 +70,13 @@ export TH_TARGET=pico
 ## flash command
 
 ```
-tinyhlelper  flash [-t {target}][args]
+tinyhlelper  flash [-t {target}][args] [-u]
 ```
 
 Runs the TinyGo flash command, will accept and any valid arguments for TinyGo flash. Will use preconfigured target if set or prompt for target if not set.
+
+Update flag will prompt for selecting new target even if target is already set.
+
 
 # Development
 
