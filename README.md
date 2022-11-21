@@ -87,11 +87,11 @@ Dumps logs from USB serial connection to standard out. First iteration might be 
 
 # Development
 
-# dev mode
+## dev mode
 
 If running via cli via `go run main.go env` TinyHelper will detect it is in dev mode and will output to `.envrc.temp` to prevent overwriting of Go environment.
 
-# Configure `.envrc`
+## Configure `.envrc`
 
 From the root the project run, add `export TH_TARGET=pico` to your existing `.envrc` file or create a
 new file with the following command from the root of the project.
