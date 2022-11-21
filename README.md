@@ -77,6 +77,13 @@ Runs the TinyGo flash command, will accept and any valid arguments for TinyGo fl
 
 Update flag will prompt for selecting new target even if target is already set.
 
+## log command
+
+```
+tinyhelper log
+```
+
+Dumps logs from USB serial connection to standard out. First iteration might be sketchy.
 
 # Development
 
