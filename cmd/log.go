@@ -10,14 +10,18 @@ import (
 	"io"
 	"log"
 	"os"
+	"os/exec"
+	"regexp"
 	"strings"
 
+	"github.com/manifoldco/promptui"
 	"github.com/spf13/cobra"
 )
 
 const (
 	bufferSize = 1024
-	usb        = "/dev/ttyACM0"
+	// should be ttyAMC.* on Linux or (tty.usbmodem.* tty.usbserial.*) on macos
+	pattern = "(ttyACM.|tty\\.usbmodem.*|tty\\.usbserial.*)"
 )
 
 // logCmd represents the log command
@@ -38,7 +42,33 @@ func init() {
 }
 
 func runLogCmd(args []string) {
-	f, err := os.Open(usb)
+	conns, err := getPossibleSerialConnections()
+	if err != nil {
+		log.Fatalf(err.Error())
+	}
+
+	if len(conns) < 1 {
+		log.Fatalf("no valid serial connections found")
+	}
+
+	var conn string
+
+	if len(conns) > 1 {
+		selectConn := promptui.Select{
+			Label: "Select connection",
+			Items: conns,
+		}
+
+		_, conn, err = selectConn.Run()
+		if err != nil {
+			log.Fatalf(err.Error())
+		}
+	} else {
+		conn = conns[0]
+		fmt.Printf("One valid serial connection found, logging: /dev/%s\n", conn)
+	}
+
+	f, err := os.Open("/dev/" + conn)
 	if err != nil {
 		log.Fatalf(err.Error())
 	}
@@ -75,6 +105,27 @@ func runLogCmd(args []string) {
 			continue
 		}
 	}
+}
+
+func getPossibleSerialConnections() ([]string, error) {
+	out, err := exec.Command("ls", "/dev/").CombinedOutput()
+	if err != nil {
+		return nil, err
+	}
+	files := strings.Split(string(out), "\n")
+
+	var results []string
+	for _, file := range files {
+		match, err := regexp.MatchString(pattern, file)
+		if err != nil {
+			continue
+		}
+		if match {
+			results = append(results, file)
+		}
+	}
+
+	return results, nil
 }
 
 func listenForQuit(quit chan bool) {
