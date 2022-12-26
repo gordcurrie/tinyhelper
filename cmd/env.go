@@ -20,11 +20,6 @@ import (
 	"github.com/spf13/viper"
 )
 
-const (
-	yes = "Yes"
-	no  = "No"
-)
-
 // envCmd represents the env command
 var envCmd = &cobra.Command{
 	Use:   "env",
@@ -154,7 +149,7 @@ func fillTempate(info data, devMode bool) {
 
 	var f *os.File
 	file := ".envrc"
-	if devMode == true {
+	if devMode {
 		file = ".envrc.dev"
 	}
 
@@ -164,12 +159,26 @@ func fillTempate(info data, devMode bool) {
 	}
 
 	f, err = os.Create(file)
-	defer f.Close()
+	if err != nil {
+		log.Fatal(err)
+	}
 
-	f.Write(old)
+	defer func() {
+		err = f.Close()
+		if err != nil {
+			log.Fatal(err)
+		}
+	}()
 
+	_, err = f.Write(old)
+	if err != nil {
+		log.Fatal(err)
+	}
 	fmt.Printf("Writing environment config to %s...\n", file)
-	tmpl.Execute(f, info)
+	err = tmpl.Execute(f, info)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
 func getExistingConfig(file string) ([]byte, error) {
